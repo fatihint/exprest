@@ -20,5 +20,8 @@
   "bugs": {
     "url": "https://github.com/fatihint/exprest/issues"
   },
-  "homepage": "https://github.com/fatihint/exprest#readme"
+  "homepage": "https://github.com/fatihint/exprest#readme",
+  "dependencies": {
+    "express": "^4.16.4"
+  }
 }
