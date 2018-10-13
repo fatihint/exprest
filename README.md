@@ -1,2 +1,2 @@
 # exprest
-Express REST API structure with
+REST API structure built with Express and contains customizable models
