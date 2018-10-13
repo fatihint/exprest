@@ -1,17 +1,16 @@
 const express = require('express')
-const app = express()
 
+const postRouter = require('./routes/post')
+
+const app = express()
 const port = 3000
 
 app.use(express.json())
 
-app.get('/', (req, res) => {
-    res.send('expREST !')
-})
+app.use('/posts', postRouter)
 
-app.post('/', (req, res) => {
-    console.log(req.body)
-    res.send('ok')
+app.get('/', (req, res) => {
+    res.send('expREST !<br> Make request to /posts')
 })
 
 app.listen(port, () => {
