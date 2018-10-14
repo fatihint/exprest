@@ -10,6 +10,13 @@ router.get('/', (req, res) => {
         .catch(err => res.status(400).send(err))
 })
 
+router.get('/:id', (req, res) => {
+    var id = req.params.id
+    Post.findById(id)
+        .then(post => res.send(post))
+        .catch(err => res.status(400).send(err))
+})
+
 router.post('/', (req, res) => {
     var body = _.pick(req.body, ['title', 'body'])
     var post = new Post({
@@ -17,6 +24,14 @@ router.post('/', (req, res) => {
         body: body.body
     })
     post.save()
+        .then(post => res.send(post))
+        .catch(err => res.status(400).send(err))
+})
+
+router.patch('/:id', (req, res) => {
+    var id = req.params.id
+    var updatedBody = _.pick(req.body, ['title', 'body'])
+    Post.findByIdAndUpdate(id, updatedBody, { new: true, runValidators: true })
         .then(post => res.send(post))
         .catch(err => res.status(400).send(err))
 })
