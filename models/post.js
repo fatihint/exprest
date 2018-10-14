@@ -27,6 +27,9 @@ var Post = mongoose.model('Post', {
     createdAt: {
         type: Date,
         default: Date.now
+    },
+    updatedAt: {
+        type: Date
     }
 })
 

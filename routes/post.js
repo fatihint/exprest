@@ -13,7 +13,7 @@ router.get('/', (req, res) => {
 
 router.delete('/', (req, res) => {
     var query = _.pick(req.query, ['title'])
-    
+
     Post.findOneAndRemove({title: query.title})
         .then((post) => {
             if (!post) {
@@ -62,6 +62,7 @@ router.patch('/:id', (req, res) => {
     }
 
     var updatedBody = _.pick(req.body, ['title', 'body'])
+    updatedBody.updatedAt = Date.now()
 
     Post.findOneAndUpdate({ _id: id }, updatedBody, { new: true, runValidators: true })
         .then((post) => {
