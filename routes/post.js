@@ -6,8 +6,21 @@ const Post = require('../models/post')
 const router = express.Router()
 
 router.get('/', (req, res) => {
-    Post.find({})
-        .then(posts => res.send(posts))
+    Post.find(req.query)
+        .then(posts => res.send({ posts, status: 200 }))
+        .catch(err => res.status(400).send(err))
+})
+
+router.delete('/', (req, res) => {
+    var query = _.pick(req.query, ['title'])
+    
+    Post.findOneAndRemove({title: query.title})
+        .then((post) => {
+            if (!post) {
+                return res.status(404).send()
+            }
+            res.send(post)
+        })
         .catch(err => res.status(400).send(err))
 })
 
