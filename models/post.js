@@ -12,6 +12,7 @@ var Post = mongoose.model('Post', {
     title: {
         type: String,
         required: true,
+        unique: true,
         trim: true,
         minlength: 2,
         maxlength: 80
