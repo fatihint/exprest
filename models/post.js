@@ -1,13 +1,5 @@
-const mongoose = require('mongoose')
 const _ = require('lodash')
-
-mongoose.connect('mongodb://localhost/exprest', { useNewUrlParser: true })
-
-var db = mongoose.connection
-db.on('error', console.error.bind(console, 'connection error: '))
-db.once('open', function () {
-    console.log('Connected')
-})
+const mongoose = require('../db/mongoose')
 
 var PostSchema = new mongoose.Schema({
     title: {
