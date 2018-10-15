@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const _ = require('lodash')
 
 mongoose.connect('mongodb://localhost/exprest', { useNewUrlParser: true })
 
@@ -8,7 +9,7 @@ db.once('open', function () {
     console.log('Connected')
 })
 
-var Post = mongoose.model('Post', {
+var PostSchema = new mongoose.Schema({
     title: {
         type: String,
         required: true,
@@ -32,5 +33,12 @@ var Post = mongoose.model('Post', {
         type: Date
     }
 })
+
+PostSchema.methods.toJSON = function() {
+    var postObject = this.toObject()
+    return _.pick(postObject, ['_id', 'title', 'body', 'createdAt'])
+}
+
+var Post = mongoose.model('Post', PostSchema)
 
 module.exports = Post
