@@ -1,21 +1,21 @@
-const _ = require('lodash')
 const mongoose = require('../db/mongoose')
+const _ = require('lodash')
 
 var PostSchema = new mongoose.Schema({
     title: {
         type: String,
-        required: true,
+        required: [true, 'Title is required'],
         unique: true,
         trim: true,
-        minlength: 2,
-        maxlength: 80
+        minlength: [2, 'Title must be minimum 2 characters !'],
+        maxlength: [80, 'Title can\'t be longer than 80 characters !']
     },
     body: {
         type: String,
         required: true,
         trim: true,
-        minlength: 3,
-        maxlength: 320
+        minlength: [2, 'Body must be minimum 2 characters !'],
+        maxlength: [320, 'Body can\'t be longer than 320 characters !']
     },
     createdAt: {
         type: Date,

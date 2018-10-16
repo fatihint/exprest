@@ -1,18 +1,23 @@
 const mongoose = require('../db/mongoose')
 const _ = require('lodash')
+const validator = require('validator')
 
 var UserSchema = new mongoose.Schema({
     email: {
         type: String,
-        required: true,
+        required: [true, 'Password is required.'],
         trim: true,
-        unique: true
+        unique: true,
+        validate: {
+            validator: validator.isEmail,
+            msg: 'Please send a valid email address.'
+        }
     },
     password: {
         type: String,
-        required: true,
+        required: [true, 'Password is required.'],
         trim: true,
-        minlength: 6
+        minlength: [6, 'Password must be minimum 6 characters !']
     },
     createdAt: {
         type: Date,
