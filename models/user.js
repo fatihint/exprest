@@ -1,4 +1,5 @@
 const mongoose = require('../db/mongoose')
+const _ = require('lodash')
 
 var UserSchema = new mongoose.Schema({
     email: {
@@ -18,6 +19,11 @@ var UserSchema = new mongoose.Schema({
         default: Date.now
     }
 })
+
+UserSchema.methods.toJSON = function() {
+    var userObj = this.toObject()
+    return _.pick(userObj, ["_id", "email", "createdAt"])
+}
 
 var User = mongoose.model('User', UserSchema)
 
