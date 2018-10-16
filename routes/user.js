@@ -15,7 +15,7 @@ router.get('/:id', (req, res) => {
     var id = req.params.id
 
     if (!ObjectID.isValid(id)) {
-        res.status(404).send()
+        return res.status(404).send()
     }
 
     User.findOne({
@@ -23,7 +23,7 @@ router.get('/:id', (req, res) => {
     })
         .then((user) => {
             if (!user) {
-                res.status(404).send()
+                return res.status(404).send()
             }
             res.send(user)
         })
