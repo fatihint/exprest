@@ -22,13 +22,16 @@ const users = [
 ]
 
 beforeEach(function () {
+    User.remove({}, function (err) {
+        if (err) throw err
+    })
     users.forEach(user => {
         var userDoc = new User(user)
         userDoc.save().then().catch()
     })
 })
 
-afterEach(function() {
+afterEach(function () {
     users.forEach(user => {
         User.findOneAndRemove({
             _id: user._id
@@ -86,5 +89,68 @@ describe('USER', () => {
                     done()
                 })
         })
+    })
+
+    describe('POST /users', () => {
+        var user = {
+            email: 'test@gmail.com',
+            password: 'testpassword'
+        }
+        it('should save new user and return it', (done) => {
+            request(app)
+                .post('/users')
+                .send(user)
+                .expect(200)
+                .expect((res) => {
+                    expect(res.body._id).to.not.be.empty()
+                    expect(res.body.email).to.equal(user.email)
+                })
+                .end((err, result) => {
+                    if (err) {
+                        return done(err)
+                    }
+                    User.findOne({ email: user.email })
+                        .then((result) => {
+                            expect(result).to.not.be.empty()
+                            done()
+                        })
+                        .catch(err => done(err))
+                })
+        })
+
+        it('should return error with invalid data', (done) => {
+            request(app)
+                .post('/users')
+                .send({ email: 'b' })
+                .expect(400)
+                .end((err, res) => {
+                    if (err) {
+                        return done(err)
+                    }
+                    User.findOne({ emai: 'b' })
+                        .then((result) => {
+                            expect(result).to.be.eql(null)
+                            done()
+                        })
+                        .catch(err => done(err))
+                })
+        })
+
+        it('shouldn\'t save user if email exist', (done) => {
+            request(app)
+                .post('/users')
+                .send({ email: users[0].email, password: users[0].password })
+                .expect(400)
+                .expect((res) => {
+                    expect(res.body.errmsg).to.not.be.empty()
+                })
+                .end((err, res) => {
+                    if (err) {
+                        done(err)
+                    }
+                    done()
+                })
+        })
+
     })
 })

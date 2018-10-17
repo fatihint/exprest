@@ -22,7 +22,7 @@ const posts = [
 ]
 
 beforeEach(function () {
-    Post.remove({}, function(err) {
+    Post.remove({}, function (err) {
         if (err) throw err
     })
     posts.forEach(post => {
@@ -101,13 +101,12 @@ describe('POST', () => {
     })
 
     describe('POST /posts', () => {
-
-        var post = {
-            title: 'titltltltl',
-            body: 'bobobybyb'
-        }
-
         it('should save a new post and return it', (done) => {
+            var post = {
+                title: 'titltltltl',
+                body: 'bobobybyb'
+            }
+
             request(app)
                 .post('/posts')
                 .send(post)
@@ -121,7 +120,7 @@ describe('POST', () => {
                     if (err) {
                         return done(err)
                     }
-                    Post.findOne({title: post.title})
+                    Post.findOne({ title: post.title })
                         .then((result) => {
                             expect(result).to.not.be.empty()
                             done()
@@ -139,7 +138,7 @@ describe('POST', () => {
                     if (err) {
                         return done(err)
                     }
-                    Post.findOne({title: post.title})
+                    Post.findOne({ title: 'b' })
                         .then((result) => {
                             expect(result).to.be.eql(null)
                             done()
@@ -151,7 +150,7 @@ describe('POST', () => {
         it('shouldn\'t save post if title exist', (done) => {
             request(app)
                 .post('/posts')
-                .send({title: posts[0].title, body: posts[0].body})
+                .send({ title: posts[0].title, body: posts[0].body })
                 .expect(400)
                 .expect((res) => {
                     expect(res.body.errmsg).to.not.be.empty()
@@ -172,7 +171,7 @@ describe('POST', () => {
             var id = posts[0]._id
             request(app)
                 .patch(`/posts/${id}`)
-                .send({title: 'updated', body: 'updatedbody'})
+                .send({ title: 'updated', body: 'updatedbody' })
                 .expect(200)
                 .expect((res) => {
                     expect(res.body._id).to.be.equal(id)
@@ -183,7 +182,7 @@ describe('POST', () => {
                     if (err) {
                         return done(err)
                     }
-                    Post.findOne({_id: id})
+                    Post.findOne({ _id: id })
                         .then((result) => {
                             expect(result.title).to.be.equal('updated')
                             done()
@@ -196,7 +195,7 @@ describe('POST', () => {
         it('should return error if update info is not valid', (done) => {
             request(app)
                 .patch(`/posts/${posts[0]._id}`)
-                .send({title: ''})
+                .send({ title: '' })
                 .expect(400)
                 .end((err, res) => {
                     if (err) {
@@ -210,7 +209,7 @@ describe('POST', () => {
         it('should return error if id is invalid', (done) => {
             request(app)
                 .patch('/posts/invalid')
-                .send({title: "newtitle"})
+                .send({ title: "newtitle" })
                 .expect(404)
                 .end((err, res) => {
                     if (err) {
@@ -225,7 +224,7 @@ describe('POST', () => {
     describe('DELETE /posts', () => {
         it('should remove the post with given id', (done) => {
             var id = posts[0]._id
-            
+
             request(app)
                 .delete(`/posts/${id}`)
                 .expect(200)
@@ -237,12 +236,12 @@ describe('POST', () => {
                         return done(err)
                     }
 
-                    Post.findOne({_id: id})
-                    .then((post) => {
-                        expect(post).to.be.eql(null)
-                        done()
-                    })
-                    .catch(err => done(err))
+                    Post.findOne({ _id: id })
+                        .then((post) => {
+                            expect(post).to.be.eql(null)
+                            done()
+                        })
+                        .catch(err => done(err))
                 })
         })
 
