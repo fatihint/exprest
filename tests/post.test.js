@@ -121,7 +121,12 @@ describe('POST', () => {
                     if (err) {
                         return done(err)
                     }
-                    done()
+                    Post.findOne({title: post.title})
+                        .then((result) => {
+                            expect(result).to.not.be.empty()
+                            done()
+                        })
+                        .catch(err => done(err))
                 })
         })
 
@@ -134,7 +139,12 @@ describe('POST', () => {
                     if (err) {
                         return done(err)
                     }
-                    done()
+                    Post.findOne({title: post.title})
+                        .then((result) => {
+                            expect(result).to.be.eql(null)
+                            done()
+                        })
+                        .catch(err => done(err))
                 })
         })
 
@@ -159,12 +169,13 @@ describe('POST', () => {
     describe('PATCH /posts', () => {
 
         it('should update the post', (done) => {
+            var id = posts[0]._id
             request(app)
-                .patch(`/posts/${posts[0]._id}`)
+                .patch(`/posts/${id}`)
                 .send({title: 'updated', body: 'updatedbody'})
                 .expect(200)
                 .expect((res) => {
-                    expect(res.body._id).to.be.equal(posts[0]._id)
+                    expect(res.body._id).to.be.equal(id)
                     expect(res.body.title).to.be.equal('updated')
                     expect(res.body.updatedAt).to.not.be.empty()
                 })
@@ -172,7 +183,12 @@ describe('POST', () => {
                     if (err) {
                         return done(err)
                     }
-                    done()
+                    Post.findOne({_id: id})
+                        .then((result) => {
+                            expect(result.title).to.be.equal('updated')
+                            done()
+                        })
+                        .catch(err => done(err))
                 })
         })
 
@@ -204,6 +220,43 @@ describe('POST', () => {
                 })
         })
 
+    })
+
+    describe('DELETE /posts', () => {
+        it('should remove the post with given id', (done) => {
+            var id = posts[0]._id
+            
+            request(app)
+                .delete(`/posts/${id}`)
+                .expect(200)
+                .expect((res) => {
+                    expect(res.body._id).to.be.equal(id)
+                })
+                .end((err, res) => {
+                    if (err) {
+                        return done(err)
+                    }
+
+                    Post.findOne({_id: id})
+                    .then((post) => {
+                        expect(post).to.be.eql(null)
+                        done()
+                    })
+                    .catch(err => done(err))
+                })
+        })
+
+        it('should return error if id is invalid or not found', (done) => {
+            request(app)
+                .delete('/posts/invalidid')
+                .expect(404)
+                .end((err, res) => {
+                    if (err) {
+                        return done(err)
+                    }
+                    done()
+                })
+        })
     })
 
 })
