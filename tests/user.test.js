@@ -204,6 +204,43 @@ describe('USER', () => {
                     done()
                 })
         })
-
     })
+
+    describe('DELETE /users', () => {
+        it('should remove the user with given id', (done) => {
+            var id = users[0]._id
+
+            request(app)
+                .delete(`/users/${id}`)
+                .expect(200)
+                .expect((res) => {
+                    expect(res.body._id).to.be.equal(id)
+                })
+                .end((err, res) => {
+                    if (err) {
+                        return done(err)
+                    }
+
+                    User.findOne({ _id: id })
+                        .then((user) => {
+                            expect(user).to.be.eql(null)
+                            done()
+                        })
+                        .catch(err => done(err))
+                })
+        })
+
+        it('should return error if id is invalid or not found', (done) => {
+            request(app)
+                .delete('/users/invalidid')
+                .expect(404)
+                .end((err, res) => {
+                    if (err) {
+                        return done(err)
+                    }
+                    done()
+                })
+        })
+    })
+
 })
