@@ -28,7 +28,7 @@ var PostSchema = new mongoose.Schema({
 
 PostSchema.methods.toJSON = function() {
     var postObject = this.toObject()
-    return _.pick(postObject, ['_id', 'title', 'body', 'createdAt'])
+    return _.pick(postObject, ['_id', 'title', 'body', 'createdAt', 'updatedAt'])
 }
 
 var Post = mongoose.model('Post', PostSchema)

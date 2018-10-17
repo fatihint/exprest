@@ -155,4 +155,55 @@ describe('POST', () => {
         })
 
     })
+
+    describe('PATCH /posts', () => {
+
+        it('should update the post', (done) => {
+            request(app)
+                .patch(`/posts/${posts[0]._id}`)
+                .send({title: 'updated', body: 'updatedbody'})
+                .expect(200)
+                .expect((res) => {
+                    expect(res.body._id).to.be.equal(posts[0]._id)
+                    expect(res.body.title).to.be.equal('updated')
+                    expect(res.body.updatedAt).to.not.be.empty()
+                })
+                .end((err, res) => {
+                    if (err) {
+                        return done(err)
+                    }
+                    done()
+                })
+        })
+
+
+        it('should return error if update info is not valid', (done) => {
+            request(app)
+                .patch(`/posts/${posts[0]._id}`)
+                .send({title: ''})
+                .expect(400)
+                .end((err, res) => {
+                    if (err) {
+                        return done(err)
+                    }
+                    done()
+                })
+        })
+
+
+        it('should return error if id is invalid', (done) => {
+            request(app)
+                .patch('/posts/invalid')
+                .send({title: "newtitle"})
+                .expect(404)
+                .end((err, res) => {
+                    if (err) {
+                        return done(err)
+                    }
+                    done()
+                })
+        })
+
+    })
+
 })
