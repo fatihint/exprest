@@ -151,6 +151,59 @@ describe('USER', () => {
                     done()
                 })
         })
+    })
+
+    describe('PATCH /users', () => {
+
+        it('should update the user', (done) => {
+            var id = users[0]._id
+            request(app)
+                .patch(`/users/${id}`)
+                .send({ email: 'updated@gmail.com', password: 'updatedpass' })
+                .expect(200)
+                .expect((res) => {
+                    expect(res.body._id).to.be.equal(id)
+                    expect(res.body.email).to.be.equal('updated@gmail.com')
+                    expect(res.body.updatedAt).to.not.be.empty()
+                })
+                .end((err, res) => {
+                    if (err) {
+                        return done(err)
+                    }
+                    User.findOne({ _id: id })
+                        .then((result) => {
+                            expect(result.email).to.be.equal('updated@gmail.com')
+                            done()
+                        })
+                        .catch(err => done(err))
+                })
+        })
+
+        it('should return error if update info is not valid', (done) => {
+            request(app)
+                .patch(`/users/${users[0]._id}`)
+                .send({ email: 'invalidmail' })
+                .expect(400)
+                .end((err, res) => {
+                    if (err) {
+                        return done(err)
+                    }
+                    done()
+                })
+        })
+
+        it('should return error if id is invalid', (done) => {
+            request(app)
+                .patch('/users/invalid')
+                .send({ email: 'updated@gmail.com' })
+                .expect(404)
+                .end((err, res) => {
+                    if (err) {
+                        return done(err)
+                    }
+                    done()
+                })
+        })
 
     })
 })

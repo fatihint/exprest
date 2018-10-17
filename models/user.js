@@ -22,12 +22,15 @@ var UserSchema = new mongoose.Schema({
     createdAt: {
         type: Date,
         default: Date.now
+    },
+    updatedAt: {
+        type: Date
     }
 })
 
 UserSchema.methods.toJSON = function() {
     var userObj = this.toObject()
-    return _.pick(userObj, ["_id", "email", "createdAt"])
+    return _.pick(userObj, ["_id", "email", "createdAt", "updatedAt"])
 }
 
 var User = mongoose.model('User', UserSchema)

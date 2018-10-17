@@ -41,4 +41,25 @@ router.post('/', (req, res) => {
         .catch(err => res.status(400).send(err))
 })
 
+router.patch('/:id', (req, res) => {
+    var id = req.params.id
+
+    if (!ObjectID.isValid(id)) {
+        return res.status(404).send()
+    }
+
+    var updatedBody = _.pick(req.body, ['email', 'password'])
+    updatedBody.updatedAt = Date.now()
+
+
+    User.findOneAndUpdate({ _id: id }, updatedBody, { new: true, runValidators: true })
+        .then((user) => {
+            if (!user) {
+                return res.status(404).send()
+            }
+            res.send(user)
+        })
+        .catch(err => res.status(400).send(err))
+})
+
 module.exports = router
