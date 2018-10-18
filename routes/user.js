@@ -64,7 +64,7 @@ router.patch('/:id', (req, res) => {
 
 router.delete('/:id', (req, res) => {
     var id = req.params.id
-    
+
     if (!ObjectID.isValid(id)) {
         return res.status(404).send()
     }
@@ -77,6 +77,30 @@ router.delete('/:id', (req, res) => {
             res.send(user)
         })
         .catch(err => res.send(err))
+})
+
+router.post('/login', (req, res) => {
+
+    var body = _.pick(req.body, ['email', 'password'])
+
+    if (body.email && body.password) {
+        User.login(body.email, body.password)
+            .then((user) => {
+                return user.generateAuthToken()
+                .then(token => {
+                    res.header('x-auth', token).send()
+                })
+            })
+            .catch((err) => {
+                res.status(404).send({
+                    status: 404,
+                    error: 'Wrong email or password !',
+                    asd: err
+                })
+            })
+    } else {
+        res.status(400).send('Credentials are missing...')
+    }
 })
 
 module.exports = router
