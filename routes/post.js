@@ -5,6 +5,8 @@ const Post = require('../models/post')
 
 const router = express.Router()
 
+const { authenticate } = require('../middlewares/authenticate')
+
 router.get('/', (req, res) => {
     Post.find(req.query)
         .then(posts => res.send({ posts, status: 200 }))
@@ -14,7 +16,7 @@ router.get('/', (req, res) => {
 router.delete('/', (req, res) => {
     var query = _.pick(req.query, ['title'])
 
-    Post.findOneAndRemove({title: query.title})
+    Post.findOneAndRemove({ title: query.title })
         .then((post) => {
             if (!post) {
                 return res.status(404).send()
@@ -43,9 +45,11 @@ router.get('/:id', (req, res) => {
         .catch(err => res.status(400).send(err))
 })
 
-router.post('/', (req, res) => {
+router.post('/', authenticate, (req, res) => {
     var body = _.pick(req.body, ['title', 'body'])
+    
     var post = new Post({
+        owner: new ObjectID(req.user._id),
         title: body.title,
         body: body.body
     })

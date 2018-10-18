@@ -88,14 +88,16 @@ router.post('/login', (req, res) => {
             .then((user) => {
                 return user.generateAuthToken()
                 .then(token => {
-                    res.header('x-auth', token).send()
+                    res.header('x-auth', token).send({
+                        status: 200,
+                        token
+                    })
                 })
             })
             .catch((err) => {
                 res.status(404).send({
                     status: 404,
                     error: 'Wrong email or password !',
-                    asd: err
                 })
             })
     } else {

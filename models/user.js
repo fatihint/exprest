@@ -47,11 +47,37 @@ UserSchema.methods.toJSON = function () {
 
 UserSchema.methods.generateAuthToken = function () {
     var access = 'auth'
-    var token = jwt.sign({_id: this._id, access}, 'secretkey')
+    var token = jwt.sign({ _id: this._id, access }, 'secretkey')
     this.tokens.push({ access, token })
 
     return this.save().then(() => {
         return token
+    })
+}
+
+UserSchema.statics.findByToken = function(token) {
+    var decoded
+
+    try {
+        decoded = jwt.decode(token, 'secretkey')
+    } catch (error) {
+        return Promise.reject()
+    }
+
+    if (!decoded) {
+        decoded = ''
+    }
+    return this.findOne({ 
+        _id: decoded._id,
+        'tokens.token': token,
+        'tokens.access': decoded.access,
+    }).then(user => {
+        if (user) {
+            return Promise.resolve(user)
+        }
+        return Promise.reject()
+    }).catch(err => {
+        return Promise.reject()
     })
 }
 

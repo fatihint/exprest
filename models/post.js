@@ -2,6 +2,10 @@ const mongoose = require('../db/mongoose')
 const _ = require('lodash')
 
 var PostSchema = new mongoose.Schema({
+    owner: {
+        type: mongoose.Schema.Types.ObjectId, 
+        required: true
+    },
     title: {
         type: String,
         required: [true, 'Title is required'],
@@ -26,7 +30,7 @@ var PostSchema = new mongoose.Schema({
     }
 })
 
-PostSchema.methods.toJSON = function() {
+PostSchema.methods.toJSON = function () {
     var postObject = this.toObject()
     return _.pick(postObject, ['_id', 'title', 'body', 'createdAt', 'updatedAt'])
 }
