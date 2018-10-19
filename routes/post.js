@@ -27,7 +27,7 @@ router.delete('/', (req, res) => {
         .catch(err => res.status(400).send(err))
 })
 
-router.get('/:id', (req, res) => {
+router.get('/:id', authenticate, (req, res) => {
     var id = req.params.id
 
     if (!ObjectID.isValid(id)) {
@@ -35,6 +35,7 @@ router.get('/:id', (req, res) => {
     }
 
     Post.findOne({
+        owner: req.user._id,
         _id: id
     })
         .then((post) => {
