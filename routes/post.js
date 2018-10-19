@@ -7,7 +7,8 @@ const router = express.Router()
 
 const { authenticate } = require('../middlewares/authenticate')
 
-router.get('/', (req, res) => {
+router.get('/', authenticate, (req, res) => {
+    req.query.owner = req.user._id
     Post.find(req.query)
         .then(posts => res.send({ posts, status: 200 }))
         .catch(err => res.status(400).send(err))

@@ -48,10 +48,14 @@ UserSchema.methods.toJSON = function () {
 UserSchema.methods.generateAuthToken = function () {
     var access = 'auth'
     var token = jwt.sign({ _id: this._id, access }, 'secretkey')
-    this.tokens.push({ access, token })
+
+    if (!(this.tokens.length > 0)) {
+        this.tokens.push({ access, token })
+    }
 
     return this.save().then(() => {
-        return token
+        if (!(this.tokens.length > 0)) return token
+        return this.tokens[0].token
     })
 }
 

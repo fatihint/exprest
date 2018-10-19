@@ -101,7 +101,10 @@ router.post('/login', (req, res) => {
                 })
             })
     } else {
-        res.status(400).send('Credentials are missing...')
+        res.status(400).send({
+            status: 400,
+            error: 'Credentials are missing.'
+        })
     }
 })
 
