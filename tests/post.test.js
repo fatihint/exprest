@@ -2,42 +2,13 @@ const expect = require('expect.js')
 const request = require('supertest')
 const { ObjectID } = require('mongodb')
 
-const Post = require('../models/post')
 const { app } = require('../server.js')
+const Post = require('../models/post')
 
-const postOneID = new ObjectID().toHexString()
-const postTwoID = new ObjectID().toHexString()
+const { users, posts, populatePosts, populateUsers } = require('../tests/seed/seed')
 
-const posts = [
-    {
-        _id: postOneID,
-        title: 'Test Title 1',
-        body: 'Test body 1'
-    },
-    {
-        _id: postTwoID,
-        title: 'Test Title 2',
-        body: 'Test body 2'
-    }
-]
-
-beforeEach(function () {
-    Post.remove({}, function (err) {
-        if (err) throw err
-    })
-    posts.forEach(post => {
-        var postDoc = new Post(post)
-        postDoc.save().then().catch()
-    })
-})
-
-afterEach(function () {
-    posts.forEach(post => {
-        Post.findOneAndRemove({
-            _id: post._id
-        }).then().catch()
-    })
-})
+beforeEach(populateUsers)
+beforeEach(populatePosts)
 
 describe('POST', () => {
 
@@ -45,9 +16,10 @@ describe('POST', () => {
         it('should get all posts', (done) => {
             request(app)
                 .get('/posts')
+                .set('x-auth', users[0].tokens[0].token)
                 .expect(200)
                 .expect((res) => {
-                    expect(res.status).to.be(200)
+                    expect(res.body.posts.length).to.be(1)
                 })
                 .end((err, res) => {
                     if (err) {
@@ -62,6 +34,7 @@ describe('POST', () => {
         it('should get the post with given id', (done) => {
             request(app)
                 .get(`/posts/${posts[0]._id}`)
+                .set('x-auth', users[0].tokens[0].token)
                 .expect(200)
                 .expect((res) => {
                     expect(res.body.title).to.equal(posts[0].title)
@@ -78,6 +51,7 @@ describe('POST', () => {
         it('should return 404 when id is invalid', (done) => {
             request(app)
                 .get('/posts/invalidid')
+                .set('x-auth', users[0].tokens[0].token)
                 .expect(404)
                 .end((err, res) => {
                     if (err) {

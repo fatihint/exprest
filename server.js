@@ -1,6 +1,5 @@
+require('./config/config')
 const express = require('express')
-
-const config = require('./config/config')
 
 const postRouter = require('./routes/post')
 const userRouter = require('./routes/user')

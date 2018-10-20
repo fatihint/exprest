@@ -5,39 +5,9 @@ const { ObjectID } = require('mongodb')
 const User = require('../models/user')
 const { app } = require('../server.js')
 
-const userOneID = new ObjectID().toHexString()
-const userTwoID = new ObjectID().toHexString()
+const { users, populateUsers } = require('../tests/seed/seed')
 
-const users = [
-    {
-        _id: userOneID,
-        email: 'testuser1@gmail.com',
-        password: 'password1'
-    },
-    {
-        _id: userTwoID,
-        email: 'testuser2@hotmail.com',
-        password: 'password2'
-    }
-]
-
-beforeEach(function () {
-    User.remove({}, function (err) {
-        if (err) throw err
-    })
-    users.forEach(user => {
-        var userDoc = new User(user)
-        userDoc.save().then().catch()
-    })
-})
-
-afterEach(function () {
-    users.forEach(user => {
-        User.findOneAndRemove({
-            _id: user._id
-        }).then().catch()
-    })
-})
+beforeEach(populateUsers)
 
 describe('USER', () => {
 
