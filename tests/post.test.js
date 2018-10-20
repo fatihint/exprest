@@ -143,7 +143,7 @@ describe('POST', () => {
 
     })
 
-    describe('PATCH /posts', () => {
+    describe('PATCH /posts/:id', () => {
 
         it('should update the post', (done) => {
             var id = posts[0]._id.toHexString()
@@ -203,7 +203,7 @@ describe('POST', () => {
 
     })
 
-    describe('DELETE /posts', () => {
+    describe('DELETE /posts/:id', () => {
         it('should remove the post with given id', (done) => {
             var id = posts[0]._id.toHexString()
 
@@ -231,6 +231,43 @@ describe('POST', () => {
         it('should return error if id is invalid or not found', (done) => {
             request(app)
                 .delete('/posts/invalidid')
+                .set('x-auth', users[0].tokens[0].token)
+                .expect(404)
+                .end((err, res) => {
+                    if (err) {
+                        return done(err)
+                    }
+                    done()
+                })
+        })
+    })
+
+    describe('DELETE /posts?title={title}', () => {
+        it('should delete posts with given title', (done) => {
+            request(app)
+                .delete('/posts?title=Test Title 1')
+                .set('x-auth', users[0].tokens[0].token)
+                .expect(200)
+                .expect((res) => {
+                    expect(res.body.title).to.be.equal('Test Title 1')
+                })
+                .end((err, res) => {
+                    if (err) {
+                        return done(err)
+                    }
+
+                    Post.findOne({ title: 'Test Title 1' })
+                        .then((post) => {
+                            expect(post).to.be.eql(null)
+                            done()
+                        })
+                        .catch(err => done(err))
+                })
+        })
+
+        it('should return error when title not found', (done) => {
+            request(app)
+                .delete('/posts?title=n')
                 .set('x-auth', users[0].tokens[0].token)
                 .expect(404)
                 .end((err, res) => {
