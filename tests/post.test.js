@@ -64,6 +64,7 @@ describe('POST', () => {
         it('should return 404 when post with :id doesn\'t exists', (done) => {
             request(app)
                 .get(`/posts/${new ObjectID().toHexString()}`)
+                .set('x-auth', users[0].tokens[0].token)
                 .expect(404)
                 .end((err, res) => {
                     if (err) {
@@ -83,6 +84,7 @@ describe('POST', () => {
 
             request(app)
                 .post('/posts')
+                .set('x-auth', users[0].tokens[0].token)
                 .send(post)
                 .expect(200)
                 .expect((res) => {
@@ -106,6 +108,7 @@ describe('POST', () => {
         it('should return error with invalid data', (done) => {
             request(app)
                 .post('/posts')
+                .set('x-auth', users[0].tokens[0].token)
                 .send({ title: 'b' })
                 .expect(400)
                 .end((err, res) => {
@@ -124,6 +127,7 @@ describe('POST', () => {
         it('shouldn\'t save post if title exist', (done) => {
             request(app)
                 .post('/posts')
+                .set('x-auth', users[0].tokens[0].token)
                 .send({ title: posts[0].title, body: posts[0].body })
                 .expect(400)
                 .expect((res) => {
@@ -142,9 +146,10 @@ describe('POST', () => {
     describe('PATCH /posts', () => {
 
         it('should update the post', (done) => {
-            var id = posts[0]._id
+            var id = posts[0]._id.toHexString()
             request(app)
                 .patch(`/posts/${id}`)
+                .set('x-auth', users[0].tokens[0].token)
                 .send({ title: 'updated', body: 'updatedbody' })
                 .expect(200)
                 .expect((res) => {
@@ -167,8 +172,10 @@ describe('POST', () => {
 
 
         it('should return error if update info is not valid', (done) => {
+            var id = posts[0]._id.toHexString()
             request(app)
-                .patch(`/posts/${posts[0]._id}`)
+                .patch(`/posts/${id}`)
+                .set('x-auth', users[0].tokens[0].token)
                 .send({ title: '' })
                 .expect(400)
                 .end((err, res) => {
@@ -183,6 +190,7 @@ describe('POST', () => {
         it('should return error if id is invalid', (done) => {
             request(app)
                 .patch('/posts/invalid')
+                .set('x-auth', users[0].tokens[0].token)
                 .send({ title: "newtitle" })
                 .expect(404)
                 .end((err, res) => {
@@ -197,10 +205,11 @@ describe('POST', () => {
 
     describe('DELETE /posts', () => {
         it('should remove the post with given id', (done) => {
-            var id = posts[0]._id
+            var id = posts[0]._id.toHexString()
 
             request(app)
                 .delete(`/posts/${id}`)
+                .set('x-auth', users[0].tokens[0].token)
                 .expect(200)
                 .expect((res) => {
                     expect(res.body._id).to.be.equal(id)
@@ -222,6 +231,7 @@ describe('POST', () => {
         it('should return error if id is invalid or not found', (done) => {
             request(app)
                 .delete('/posts/invalidid')
+                .set('x-auth', users[0].tokens[0].token)
                 .expect(404)
                 .end((err, res) => {
                     if (err) {

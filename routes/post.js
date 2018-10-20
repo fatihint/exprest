@@ -60,7 +60,7 @@ router.post('/', authenticate, (req, res) => {
         .catch(err => res.status(400).send(err))
 })
 
-router.patch('/:id', (req, res) => {
+router.patch('/:id', authenticate, (req, res) => {
     var id = req.params.id
 
     if (!ObjectID.isValid(id)) {
@@ -80,7 +80,7 @@ router.patch('/:id', (req, res) => {
         .catch(err => res.status(400).send(err))
 })
 
-router.delete('/:id', (req, res) => {
+router.delete('/:id', authenticate, (req, res) => {
     var id = req.params.id
 
     if (!ObjectID.isValid(id)) {
