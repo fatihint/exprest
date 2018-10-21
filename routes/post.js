@@ -14,7 +14,7 @@ router.get('/', authenticate, (req, res) => {
         .catch(err => res.status(400).send(err))
 })
 
-router.delete('/', (req, res) => {
+router.delete('/', authenticate, (req, res) => {
     var query = _.pick(req.query, ['title'])
 
     Post.findOneAndRemove({ title: query.title })

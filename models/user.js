@@ -21,6 +21,11 @@ var UserSchema = new mongoose.Schema({
         trim: true,
         minlength: [6, 'Password must be minimum 6 characters !']
     },
+    role: {
+        type: String,
+        required: true,
+        default: 'USER'
+    },
     createdAt: {
         type: Date,
         default: Date.now

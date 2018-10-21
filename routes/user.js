@@ -1,11 +1,14 @@
 const express = require('express')
 const { ObjectID } = require('mongodb')
 const _ = require('lodash')
+
 const User = require('../models/user')
+const { authenticate } = require('../middlewares/authenticate')
+const { administrator } = require('../middlewares/administrator')
 
 const router = express.Router()
 
-router.get('/', (req, res) => {
+router.get('/', authenticate, administrator, (req, res) => {
     User.find(req.query)
         .then(users => res.send({ users, status: 200 }))
         .catch(err => res.status(400).send(err))
@@ -87,12 +90,12 @@ router.post('/login', (req, res) => {
         User.login(body.email, body.password)
             .then((user) => {
                 return user.generateAuthToken()
-                .then(token => {
-                    res.header('x-auth', token).send({
-                        status: 200,
-                        token
+                    .then(token => {
+                        res.header('x-auth', token).send({
+                            status: 200,
+                            token
+                        })
                     })
-                })
             })
             .catch((err) => {
                 res.status(404).send({
