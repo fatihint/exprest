@@ -8,16 +8,26 @@ const router = express.Router()
 const { authenticate } = require('../middlewares/authenticate')
 
 router.get('/', authenticate, (req, res) => {
-    req.query.owner = req.user._id
+    if (req.user.role === 'USER') {
+        req.query.owner = req.user._id
+    }
     Post.find(req.query)
         .then(posts => res.send({ posts, status: 200 }))
         .catch(err => res.status(400).send(err))
 })
 
 router.delete('/', authenticate, (req, res) => {
-    var query = _.pick(req.query, ['title'])
+    var params = _.pick(req.query, ['title'])
 
-    Post.findOneAndRemove({ title: query.title })
+    var query = {
+        title: params.title 
+    }
+
+    if (req.user.role === 'USER') {
+        query.owner = req.user._id
+    }
+
+    Post.findOneAndRemove(query)
         .then((post) => {
             if (!post) {
                 return res.status(404).send()
@@ -34,10 +44,15 @@ router.get('/:id', authenticate, (req, res) => {
         return res.status(404).send()
     }
 
-    Post.findOne({
-        owner: req.user._id,
+    var query = {
         _id: id
-    })
+    }
+
+    if (req.user.role === 'USER') {
+        query.owner = req.user._id
+    }
+
+    Post.findOne(query)
         .then((post) => {
             if (!post) {
                 return res.status(404).send()
@@ -70,7 +85,15 @@ router.patch('/:id', authenticate, (req, res) => {
     var updatedBody = _.pick(req.body, ['title', 'body'])
     updatedBody.updatedAt = Date.now()
 
-    Post.findOneAndUpdate({ _id: id }, updatedBody, { new: true, runValidators: true })
+    var query = {
+        _id: id
+    }
+
+    if (req.user.role === 'USER') {
+        query.owner = req.user._id
+    }
+
+    Post.findOneAndUpdate(query, updatedBody, { new: true, runValidators: true })
         .then((post) => {
             if (!post) {
                 return res.status(404).send()
@@ -87,7 +110,15 @@ router.delete('/:id', authenticate, (req, res) => {
         return res.status(404).send()
     }
 
-    Post.findOneAndRemove({ _id: id })
+    var query = {
+        _id: id
+    }
+
+    if (req.user.role === 'USER') {
+        query.owner = req.user._id
+    }
+
+    Post.findOneAndRemove(query)
         .then((post) => {
             if (!post) {
                 return res.status(404).send()

@@ -4,11 +4,13 @@ const _ = require('lodash')
 
 const User = require('../models/user')
 const { authenticate } = require('../middlewares/authenticate')
-const { administrator } = require('../middlewares/administrator')
 
 const router = express.Router()
 
-router.get('/', authenticate, administrator, (req, res) => {
+router.get('/', authenticate, (req, res) => {
+    if (req.user.role === 'USER') {
+        req.query._id = req.user._id
+    }
     User.find(req.query)
         .then(users => res.send({ users, status: 200 }))
         .catch(err => res.status(400).send(err))

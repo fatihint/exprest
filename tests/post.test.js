@@ -13,13 +13,29 @@ beforeEach(populatePosts)
 describe('POST', () => {
 
     describe('GET /posts', () => {
-        it('should get all posts', (done) => {
+        it('should get all posts of normal user', (done) => {
             request(app)
                 .get('/posts')
                 .set('x-auth', users[0].tokens[0].token)
                 .expect(200)
                 .expect((res) => {
-                    expect(res.body.posts.length).to.be(1)
+                    expect(res.body.posts.length).to.be(2)
+                })
+                .end((err, res) => {
+                    if (err) {
+                        return done(err)
+                    }
+                    done()
+                })
+        })
+
+        it('should get all posts if user is ADMIN', (done) => {
+            request(app)
+                .get('/posts')
+                .set('x-auth', users[1].tokens[0].token)
+                .expect(200)
+                .expect((res) => {
+                    expect(res.body.posts.length).to.be(3)
                 })
                 .end((err, res) => {
                     if (err) {
@@ -31,10 +47,27 @@ describe('POST', () => {
     })
 
     describe('GET /posts/:id', () => {
-        it('should get the post with given id', (done) => {
+        it('should get the post of the user with given id', (done) => {
             request(app)
                 .get(`/posts/${posts[0]._id}`)
                 .set('x-auth', users[0].tokens[0].token)
+                .expect(200)
+                .expect((res) => {
+                    expect(res.body.title).to.equal(posts[0].title)
+                    expect(res.body.body).to.equal(posts[0].body)
+                })
+                .end((err, res) => {
+                    if (err) {
+                        return done(err)
+                    }
+                    done()
+                })
+        })
+
+        it('should get any of the posts if user is admin ', (done) => {
+            request(app)
+                .get(`/posts/${posts[0]._id}`)
+                .set('x-auth', users[1].tokens[0].token)
                 .expect(200)
                 .expect((res) => {
                     expect(res.body.title).to.equal(posts[0].title)
@@ -145,11 +178,36 @@ describe('POST', () => {
 
     describe('PATCH /posts/:id', () => {
 
-        it('should update the post', (done) => {
+        it('should update the post of the user', (done) => {
             var id = posts[0]._id.toHexString()
             request(app)
                 .patch(`/posts/${id}`)
                 .set('x-auth', users[0].tokens[0].token)
+                .send({ title: 'updated', body: 'updatedbody' })
+                .expect(200)
+                .expect((res) => {
+                    expect(res.body._id).to.be.equal(id)
+                    expect(res.body.title).to.be.equal('updated')
+                    expect(res.body.updatedAt).to.not.be.empty()
+                })
+                .end((err, res) => {
+                    if (err) {
+                        return done(err)
+                    }
+                    Post.findOne({ _id: id })
+                        .then((result) => {
+                            expect(result.title).to.be.equal('updated')
+                            done()
+                        })
+                        .catch(err => done(err))
+                })
+        })
+
+        it('should update any post if the user is ADMIN', (done) => {
+            var id = posts[0]._id.toHexString()
+            request(app)
+                .patch(`/posts/${id}`)
+                .set('x-auth', users[1].tokens[0].token)
                 .send({ title: 'updated', body: 'updatedbody' })
                 .expect(200)
                 .expect((res) => {
@@ -204,12 +262,36 @@ describe('POST', () => {
     })
 
     describe('DELETE /posts/:id', () => {
-        it('should remove the post with given id', (done) => {
+        it('should remove the post of the user with given id', (done) => {
             var id = posts[0]._id.toHexString()
 
             request(app)
                 .delete(`/posts/${id}`)
                 .set('x-auth', users[0].tokens[0].token)
+                .expect(200)
+                .expect((res) => {
+                    expect(res.body._id).to.be.equal(id)
+                })
+                .end((err, res) => {
+                    if (err) {
+                        return done(err)
+                    }
+
+                    Post.findOne({ _id: id })
+                        .then((post) => {
+                            expect(post).to.be.eql(null)
+                            done()
+                        })
+                        .catch(err => done(err))
+                })
+        })
+
+        it('should remove any post if the user is ADMIN', (done) => {
+            var id = posts[0]._id.toHexString()
+
+            request(app)
+                .delete(`/posts/${id}`)
+                .set('x-auth', users[1].tokens[0].token)
                 .expect(200)
                 .expect((res) => {
                     expect(res.body._id).to.be.equal(id)
@@ -243,10 +325,32 @@ describe('POST', () => {
     })
 
     describe('DELETE /posts?title={title}', () => {
-        it('should delete posts with given title', (done) => {
+        it('should delete posts of user with given title', (done) => {
             request(app)
                 .delete('/posts?title=Test Title 1')
                 .set('x-auth', users[0].tokens[0].token)
+                .expect(200)
+                .expect((res) => {
+                    expect(res.body.title).to.be.equal('Test Title 1')
+                })
+                .end((err, res) => {
+                    if (err) {
+                        return done(err)
+                    }
+
+                    Post.findOne({ title: 'Test Title 1' })
+                        .then((post) => {
+                            expect(post).to.be.eql(null)
+                            done()
+                        })
+                        .catch(err => done(err))
+                })
+        })
+
+        it('should delete any post if user is admin', (done) => {
+            request(app)
+                .delete('/posts?title=Test Title 1')
+                .set('x-auth', users[1].tokens[0].token)
                 .expect(200)
                 .expect((res) => {
                     expect(res.body.title).to.be.equal('Test Title 1')

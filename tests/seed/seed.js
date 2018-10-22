@@ -24,7 +24,8 @@ const users = [
         tokens: [{
             access: 'auth',
             token: jwt.sign({ _id: userTwoID, access: 'auth' }, 'secretkey')
-        }]
+        }],
+        role: 'ADMIN'
     }
 ]
 
@@ -34,6 +35,12 @@ const posts = [
         _id: new ObjectID(),
         title: 'Test Title 1',
         body: 'Test body 1'
+    },
+    {
+        owner: userOneID,
+        _id: new ObjectID(),
+        title: 'Test Title 3',
+        body: 'Test body 3'
     },
     {
         owner: userTwoID,
@@ -46,7 +53,10 @@ const posts = [
 var populateUsers = (done) => {
     User.remove({})
         .then(() => {
-            return new User(users[0]).save()
+            var userOne = new User(users[0]).save()
+            var userTwo = new User(users[1]).save()
+
+            return Promise.all([userOne, userTwo])
         })
         .then(() => done())
         .catch(err => { throw err})
