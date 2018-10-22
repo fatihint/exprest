@@ -3,20 +3,17 @@ const { ObjectID } = require('mongodb')
 const _ = require('lodash')
 
 const User = require('../models/user')
-const { authenticate } = require('../middlewares/authenticate')
+const { administrator } = require('../middlewares/administrator')
 
 const router = express.Router()
 
-router.get('/', authenticate, (req, res) => {
-    if (req.user.role === 'USER') {
-        req.query._id = req.user._id
-    }
+router.get('/', administrator, (req, res) => {
     User.find(req.query)
         .then(users => res.send({ users, status: 200 }))
         .catch(err => res.status(400).send(err))
 })
 
-router.get('/:id', (req, res) => {
+router.get('/:id', administrator, (req, res) => {
     var id = req.params.id
 
     if (!ObjectID.isValid(id)) {
@@ -46,7 +43,7 @@ router.post('/', (req, res) => {
         .catch(err => res.status(400).send(err))
 })
 
-router.patch('/:id', (req, res) => {
+router.patch('/:id', administrator, (req, res) => {
     var id = req.params.id
 
     if (!ObjectID.isValid(id)) {
@@ -67,7 +64,7 @@ router.patch('/:id', (req, res) => {
         .catch(err => res.status(400).send(err))
 })
 
-router.delete('/:id', (req, res) => {
+router.delete('/:id', administrator, (req, res) => {
     var id = req.params.id
 
     if (!ObjectID.isValid(id)) {
