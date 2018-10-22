@@ -110,4 +110,17 @@ router.post('/login', (req, res) => {
     }
 })
 
+router.get('/me', authenticate, (req, res) => {
+    User.findOne({
+        _id: req.user._id
+    })
+        .then((user) => {
+            if (!user) {
+                return res.status(404).send()
+            }
+            res.send(user)
+        })
+        .catch(err => res.status(400).send(err))
+})
+
 module.exports = router
