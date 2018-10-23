@@ -44,7 +44,7 @@ router.post('/', (req, res) => {
         .catch(err => res.status(400).send(err))
 })
 
-router.patch('/:id', administrator, (req, res) => {
+router.patch('/:id', authenticate, (req, res) => {
     var id = req.params.id
 
     if (!ObjectID.isValid(id)) {
@@ -54,6 +54,9 @@ router.patch('/:id', administrator, (req, res) => {
     var updatedBody = _.pick(req.body, ['email', 'password'])
     updatedBody.updatedAt = Date.now()
 
+    if (req.user.role === 'USER' && id != req.user._id) {
+            return res.status(401).send()
+    }
 
     User.findOneAndUpdate({ _id: id }, updatedBody, { new: true, runValidators: true })
         .then((user) => {
@@ -65,11 +68,15 @@ router.patch('/:id', administrator, (req, res) => {
         .catch(err => res.status(400).send(err))
 })
 
-router.delete('/:id', administrator, (req, res) => {
+router.delete('/:id', authenticate, (req, res) => {
     var id = req.params.id
 
     if (!ObjectID.isValid(id)) {
         return res.status(404).send()
+    }
+
+    if (req.user.role === 'USER' && id != req.user._id) {
+        return res.status(401).send()
     }
 
     User.findOneAndRemove({ _id: id })

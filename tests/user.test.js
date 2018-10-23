@@ -162,7 +162,7 @@ describe('USER', () => {
             var id = users[0]._id.toHexString()
             request(app)
                 .patch(`/users/${id}`)
-                .set('x-auth', users[1].tokens[0].token)
+                .set('x-auth', users[0].tokens[0].token)
                 .send({ email: 'updated@gmail.com', password: 'updatedpass' })
                 .expect(200)
                 .expect((res) => {
@@ -184,7 +184,7 @@ describe('USER', () => {
         })
 
         it('should give an error if user is not ADMIN', (done) => {
-            var id = users[0]._id.toHexString()
+            var id = users[1]._id.toHexString()
             request(app)
                 .patch(`/users/${id}`)
                 .set('x-auth', users[0].tokens[0].token)
@@ -233,7 +233,7 @@ describe('USER', () => {
 
             request(app)
                 .delete(`/users/${id}`)
-                .set('x-auth', users[1].tokens[0].token)
+                .set('x-auth', users[0].tokens[0].token)
                 .expect(200)
                 .expect((res) => {
                     expect(res.body._id).to.be.equal(id)
@@ -253,7 +253,7 @@ describe('USER', () => {
         })
 
         it('should give an error if user is not ADMIN', (done) => {
-            var id = users[0]._id.toHexString()
+            var id = users[1]._id.toHexString()
 
             request(app)
                 .delete(`/users/${id}`)
