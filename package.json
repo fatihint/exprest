@@ -4,7 +4,12 @@
   "description": "REST API structure built with Express",
   "main": "app.js",
   "scripts": {
-    "test": "export NODE_ENV=test && mocha tests/**.test.js"
+    "start": "node server/server.js",
+    "test": "export NODE_ENV=test && mocha tests/**.test.js",
+    "test-watch": "nodemon --exec 'npm test'"
+  },
+  "engines": {
+    "node": "8.11.1"
   },
   "repository": {
     "type": "git",

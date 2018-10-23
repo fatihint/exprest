@@ -4,6 +4,7 @@ const _ = require('lodash')
 
 const User = require('../models/user')
 const { administrator } = require('../middlewares/administrator')
+const { authenticate } = require('../middlewares/authenticate')
 
 const router = express.Router()
 

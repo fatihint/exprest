@@ -52,7 +52,7 @@ UserSchema.methods.toJSON = function () {
 
 UserSchema.methods.generateAuthToken = function () {
     var access = 'auth'
-    var token = jwt.sign({ _id: this._id, access }, 'secretkey')
+    var token = jwt.sign({ _id: this._id, access }, process.env.JWT_SECRET)
 
     if (!(this.tokens.length > 0)) {
         this.tokens.push({ access, token })
@@ -68,7 +68,7 @@ UserSchema.statics.findByToken = function(token) {
     var decoded
 
     try {
-        decoded = jwt.decode(token, 'secretkey')
+        decoded = jwt.decode(token, process.env.JWT_SECRET)
     } catch (error) {
         return Promise.reject()
     }
