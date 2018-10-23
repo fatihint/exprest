@@ -13,7 +13,7 @@ app.use('/posts', postRouter)
 app.use('/users', userRouter)
 
 app.get('/', (req, res) => {
-    res.send('expREST !<br> Make request to /posts')
+    res.send('Exprest !<br> DOC: <a href="https://github.com/fatihint/exprest">https://github.com/fatihint/exprest</a>')
 })
 
 app.listen(port, () => {
