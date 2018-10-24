@@ -59,7 +59,7 @@ describe('USER', () => {
         })
 
         it('should give an error if user is not admin', (done) => {
-            var userOneID = users[0]._id
+            var userOneID = users[1]._id
 
             request(app)
                 .get(`/users/${userOneID}`)

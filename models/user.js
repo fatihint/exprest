@@ -64,6 +64,11 @@ UserSchema.methods.generateAuthToken = function () {
     })
 }
 
+UserSchema.methods.logout = function() {
+    this.tokens.splice(0, 1)
+    return this.save()
+}
+
 UserSchema.statics.findByToken = function(token) {
     var decoded
 

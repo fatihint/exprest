@@ -57,7 +57,7 @@ Test Admin User Information for [Heroku App](https://exprest.herokuapp.com/):
 
 **GET /users/{id}** - Finds the user with given id.
 
-**GET /users/me** - Finds the user who made the request.
+**GET /users/me/logout** - Logs out the user who made the request by removing the token.
 
 **POST /users/** - Creates a new user with given info: 
 

@@ -14,11 +14,15 @@ router.get('/', administrator, (req, res) => {
         .catch(err => res.status(400).send(err))
 })
 
-router.get('/:id', administrator, (req, res) => {
+router.get('/:id', authenticate, (req, res) => {
     var id = req.params.id
 
     if (!ObjectID.isValid(id)) {
         return res.status(404).send()
+    }
+
+    if (req.user.role === 'USER' && id != req.user._id) {
+        return res.status(401).send()
     }
 
     User.findOne({
@@ -55,7 +59,7 @@ router.patch('/:id', authenticate, (req, res) => {
     updatedBody.updatedAt = Date.now()
 
     if (req.user.role === 'USER' && id != req.user._id) {
-            return res.status(401).send()
+        return res.status(401).send()
     }
 
     User.findOneAndUpdate({ _id: id }, updatedBody, { new: true, runValidators: true })
@@ -118,15 +122,15 @@ router.post('/login', (req, res) => {
     }
 })
 
-router.get('/me', authenticate, (req, res) => {
-    User.findOne({
-        _id: req.user._id
-    })
+router.get('/me/logout', authenticate, (req, res) => {
+    const user = req.user
+
+    user.logout()
         .then((user) => {
-            if (!user) {
-                return res.status(404).send()
-            }
-            res.send(user)
+            res.send({
+                status: 200,
+                message: 'Logged out.'
+            })
         })
         .catch(err => res.status(400).send(err))
 })
